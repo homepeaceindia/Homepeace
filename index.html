@@ -1,3 +1,374 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HomePeace | Buy and Rent Homes</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7f5;
+      color: #20352b;
+    }
+
+    header {
+      background: #124e3b;
+      color: white;
+      padding: 22px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    nav {
+      background: white;
+      padding: 15px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: #124e3b;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .hero {
+      background: #dcefe4;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input, select {
+      border: 1px solid #bbb;
+      background: white;
+    }
+
+    button {
+      background: #176b4b;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0e4c34;
+    }
+
+    .property {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin: 16px 0;
+      box-shadow: 0 3px 12px #00000012;
+    }
+
+    .house {
+      background: #e5eee7;
+      padding: 25px;
+      text-align: center;
+      font-size: 60px;
+      border-radius: 10px;
+    }
+
+    .price {
+      color: #176b4b;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #dcefe4;
+      padding: 6px 10px;
+      border-radius: 20px;
+    }
+
+    .section-title {
+      margin-top: 30px;
+    }
+
+    footer {
+      background: #124e3b;
+      color: white;
+      text-align: center;
+      padding: 25px;
+    }
+
+    .note {
+      color: #666;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🏡 HomePeace</h1>
+    <p>Find a place to call home.</p>
+  </header>
+
+  <nav>
+    <a href="#homes">Find Homes</a>
+    <a href="#list">List Property</a>
+    <a href="#about">About Us</a>
+  </nav>
+
+  <main>
+
+    <section class="hero">
+      <h2>Find Your Perfect Home</h2>
+      <p>Explore properties for sale and rent across India.</p>
+
+      <input
+        type="text"
+        id="city"
+        placeholder="Enter city, e.g. Bengaluru"
+      >
+
+      <select id="type">
+        <option value="All">Buy or Rent</option>
+        <option value="Buy">Buy a Home</option>
+        <option value="Rent">Rent a Home</option>
+      </select>
+
+      <button onclick="searchHomes()">
+        Search Properties
+      </button>
+    </section>
+
+    <section id="homes">
+      <h2 class="section-title">Featured Properties</h2>
+      <div id="results"></div>
+    </section>
+
+    <section id="list" class="property">
+      <h2>List Your Property</h2>
+      <p>Enter the details of your property.</p>
+
+      <input
+        type="text"
+        id="owner"
+        placeholder="Your name"
+      >
+
+      <input
+        type="text"
+        id="newCity"
+        placeholder="Property city"
+      >
+
+      <input
+        type="text"
+        id="propertyName"
+        placeholder="Property name"
+      >
+
+      <input
+        type="number"
+        id="amount"
+        min="1"
+        placeholder="Price in rupees"
+      >
+
+      <select id="listingType">
+        <option value="Rent">For Rent</option>
+        <option value="Buy">For Sale</option>
+      </select>
+
+      <button onclick="addHome()">
+        Add Property
+      </button>
+
+      <p id="message"></p>
+
+      <p class="note">
+        This demo stores listings only temporarily in the current page.
+        It does not send them to a server.
+      </p>
+    </section>
+
+    <section id="about">
+      <h2>About HomePeace</h2>
+      <p>
+        HomePeace helps people discover homes for rent and sale.
+        Our goal is to make finding a home simple and convenient.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <h2>HomePeace 🏡</h2>
+    <p>Helping you find your happy place.</p>
+    <p>Contact: Add your business email here.</p>
+    <p>© 2026 HomePeace</p>
+  </footer>
+
+  <script>
+    let properties = [
+      {
+        city: "Bengaluru",
+        type: "Rent",
+        price: 15000,
+        name: "Comfortable City Apartment"
+      },
+      {
+        city: "Mysuru",
+        type: "Buy",
+        price: 4500000,
+        name: "Family Home"
+      },
+      {
+        city: "Mangaluru",
+        type: "Rent",
+        price: 12000,
+        name: "Peaceful Rental Home"
+      }
+    ];
+
+    function showHomes(items) {
+      const results = document.getElementById("results");
+      results.innerHTML = "";
+
+      if (items.length === 0) {
+        results.textContent =
+          "No properties found. Try another city.";
+        return;
+      }
+
+      items.forEach(function(property) {
+        const card = document.createElement("div");
+        card.className = "property";
+
+        const house = document.createElement("div");
+        house.className = "house";
+        house.textContent = "🏠";
+
+        const title = document.createElement("h3");
+        title.textContent = property.name;
+
+        const location = document.createElement("p");
+        location.textContent = "📍 " + property.city;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent =
+          property.type === "Rent" ? "For Rent" : "For Sale";
+
+        const price = document.createElement("p");
+        price.className = "price";
+        price.textContent =
+          "₹" + Number(property.price).toLocaleString("en-IN") +
+          (property.type === "Rent" ? " / month" : "");
+
+        card.appendChild(house);
+        card.appendChild(title);
+        card.appendChild(location);
+        card.appendChild(tag);
+        card.appendChild(price);
+
+        results.appendChild(card);
+      });
+    }
+
+    function searchHomes() {
+      const city = document.getElementById("city")
+        .value.trim().toLowerCase();
+
+      const type = document.getElementById("type").value;
+
+      const filtered = properties.filter(function(property) {
+        const matchesCity =
+          !city || property.city.toLowerCase().includes(city);
+
+        const matchesType =
+          type === "All" || property.type === type;
+
+        return matchesCity && matchesType;
+      });
+
+      showHomes(filtered);
+    }
+
+    function addHome() {
+      const owner =
+        document.getElementById("owner").value.trim();
+
+      const city =
+        document.getElementById("newCity").value.trim();
+
+      const name =
+        document.getElementById("propertyName").value.trim();
+
+      const price =
+        Number(document.getElementById("amount").value);
+
+      const type =
+        document.getElementById("listingType").value;
+
+      const message =
+        document.getElementById("message");
+
+      if (
+        !owner ||
+        !city ||
+        !name ||
+        !Number.isFinite(price) ||
+        price <= 0
+      ) {
+        message.textContent =
+          "Please fill in all fields correctly.";
+        return;
+      }
+
+      properties.push({
+        city: city,
+        type: type,
+        price: price,
+        name: name
+      });
+
+      message.textContent =
+        "Property added to this demo!";
+
+      document.getElementById("owner").value = "";
+      document.getElementById("newCity").value = "";
+      document.getElementById("propertyName").value = "";
+      document.getElementById("amount").value = "";
+
+      showHomes(properties);
+    }
+
+    showHomes(properties);
+  </script>
+
+</body>
+</html>
+
